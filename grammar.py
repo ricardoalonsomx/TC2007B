@@ -218,10 +218,10 @@ def calc(expression):
 
     return ans
 
-    toFile = json.dumps(ans)
-    file = open("./jsonDump.json", 'w')
-    file.write(toFile)
-    file.close()
+    #toFile = json.dumps(ans)
+    #file = open("./jsonDump.json", 'w')
+    #file.write(toFile)
+    #file.close()
 
 def evaluate(val, expression):
     global sentence

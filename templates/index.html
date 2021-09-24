@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="/TC2007B.100/index.css">
+    <link rel="stylesheet" href="/index.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
     <script type="text/javascript" src="dump.json"></script>
@@ -22,6 +22,7 @@
 </html>
 
 <script>
+
     function createJson(){
         //get textField
         const textField = document.getElementById("function");
@@ -55,31 +56,44 @@
             console.log(data);
     });
 
-    // function getX() {
+    function getX() {
+        var requestURL = 'http:/'+ document.getElementById("function").data; //URL of the JSON data
+        var wData, hum;
+
+        var request = new XMLHttpRequest(); // create http request
+
+        request.onreadystatechange = function() {
+            if (request.readyState == 4 && request.status == 200) {
+                wData = JSON.parse(request.responseText);
+                //hum = wData.humidity;
+
+                console.log(wData);
+                console.log(hum);
+            }
+        }
+        request.open('GET', requestURL);
+        request.send();
         
-    //     const CHART = document.getElementById("myChart");
-    //     console.log(CHART);
+        const CHART = document.getElementById("myChart");
+        console.log(CHART);
 
-    //     const yData = JSON.parse('jsonDump.json');
-    //     console.log(yData);
+        const xData = ['-10','-9','-8','-7','-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6','7','8','9','10'];
 
-    //     const xData = ['-10','-9','-8','-7','-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6','7','8','9','10'];
+        const data = {
+            labels: xData,
+            datasets: [{
+                label: 'Square root of your equation',
+                data: wData,
+                fill: false,
+                borderColor: 'rgb(75,192,192)',
+                tension: 0.1
+            }]
+        };
 
-    //     const data = {
-    //         labels: xData,
-    //         datasets: [{
-    //             label: 'Square root of your equation',
-    //             data: yData,
-    //             fill: false,
-    //             borderColor: 'rgb(75,192,192)',
-    //             tension: 0.1
-    //         }]
-    //     };
-
-    //     let config = new Chart(CHART, {
-    //         type: 'line',
-    //         data: data,
-    //     });
-    // }
+        let config = new Chart(CHART, {
+            type: 'line',
+            data: data,
+        });
+    }
     
 </script>
