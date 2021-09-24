@@ -2,14 +2,84 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="/testing/aplicacionWEB/TC2007B.100/index.css">
+    <link rel="stylesheet" href="/TC2007B.100/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <script type="text/javascript" src="dump.json"></script>
 </head>
 
 <body>
     <div id="container">
         <label for="function" style="color: rgb(219, 217, 217); margin: 8px 0;">Introduce tu función</label>
         <input type="text" id="function" name="function" placeholder="x^2">
-        <input type="submit" value="Calcular">
+        <button id="sub" value="Calcular" onclick="getX()">Submit</button>
     </div>
+
+    <div id="char">
+        <canvas id="myChart" ></canvas>
+    </div>      
 </body>
 </html>
+
+<script>
+    function createJson(){
+        //get textField
+        const textField = document.getElementById("function");
+        //get Input from textField
+        const userInput = textField.value;
+        //convert to json format
+        string = JSON.stringify(userInput);
+        //save to file using fs
+        var fs = require('fs');
+        fs.writeFile("toPython.json", userInput, function(err, result) {
+            if(err) console.log('error', err);
+        });
+    };
+
+    function readTextFile(file, callback) {
+        var rawFile = new XMLHttpRequest();
+        rawFile.overrideMimeType("/dump.json");
+        rawFile.open("GET", file, true);
+        rawFile.onreadystatechange = function() {
+            if (rawFile.readyState === 4 && rawFile.status == "200") {
+                callback(rawFile.responseText);
+            }
+        }
+        rawFile.send(null);
+    }
+
+    //usage:
+    //C:\Users\ferna\OneDrive\Desktop\tec\5to Semestre\testing\aplicacionWEB
+    readTextFile("C:/Users/ferna/OneDrive/Desktop/tec/5to\ sSemestre/testing/aplicacionWEB/TC2007B.100/dump.json", function(text){
+            var data = JSON.parse(text);
+            console.log(data);
+    });
+
+    // function getX() {
+        
+    //     const CHART = document.getElementById("myChart");
+    //     console.log(CHART);
+
+    //     const yData = JSON.parse('jsonDump.json');
+    //     console.log(yData);
+
+    //     const xData = ['-10','-9','-8','-7','-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6','7','8','9','10'];
+
+    //     const data = {
+    //         labels: xData,
+    //         datasets: [{
+    //             label: 'Square root of your equation',
+    //             data: yData,
+    //             fill: false,
+    //             borderColor: 'rgb(75,192,192)',
+    //             tension: 0.1
+    //         }]
+    //     };
+
+    //     let config = new Chart(CHART, {
+    //         type: 'line',
+    //         data: data,
+    //     });
+    // }
+    
+</script>

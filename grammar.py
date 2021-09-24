@@ -1,4 +1,5 @@
 import math
+import json
 
 #Definicion de la gramatica
 #eliminar la recursion por la izquierda
@@ -20,7 +21,8 @@ G -> (E)| num | x | sinG | cosG | ... | expG
     
 """
 
-global counter 
+global counter
+global x
 counter = 0
 stack = []
 stack_operators = []
@@ -37,12 +39,14 @@ def FindOperator(operator):
         return math.tan
     elif operator.find('exp') != -1:
         return math.exp
+    elif operator.find('sqrt') != -1:
+        return math.sqrt
     return None
 
 #Reduction operator 
 def reduction(val1, val2, operator):
     #Reduction
-    print(val1,val2)
+    #print(val1,val2)
     if operator == '+':
         result = val1 + val2
 
@@ -69,7 +73,7 @@ def GetFirstCharacters():
     return sentence[counter:sub_counter], sub_counter
 
 def G():
-    print("G")
+    # print("G")
     S()
     global counter
     if counter < len(sentence) :
@@ -88,12 +92,12 @@ def G():
         elif sentence[counter].isdigit():
             #Reconomos todos los digitos
             sub_cadena = ''
-            while counter < len(sentence) and sentence[counter].isdigit():
+            while counter < len(sentence) and (sentence[counter].isdigit() or sentence[counter] == "."):
                 sub_cadena = sub_cadena + sentence[counter]
                 counter = counter + 1
             stack.append(float(sub_cadena))
         elif sentence[counter] == 'x':
-            if sentence[counter-1].isdigit():
+            if counter > 0 and sentence[counter-1].isdigit():
                 stack.append('x')
             else:
                 stack.append(x)
@@ -108,25 +112,29 @@ def G():
 
 # Regla 1
 def E():
-    print("E")
+    #print("E")
     T()
     Ep()
 
 # Regla 3
 def T():
-    print("T")
+    #print("T")
     F()
     Tp()
 
 def S():
     global counter
-    print("S")
+    #print("S")
+    #if len(stack) > 0:
+        #print(stack[len(stack) - 1])
+    #else:
+        #print("empty stack")
     while counter < len(sentence) and sentence[counter] == ' ':
         counter += 1
 
 # Regla 2
 def Ep():
-    print("Ep")
+    #print("Ep")
     S()
     global counter
     if counter < len(sentence) :
@@ -141,54 +149,88 @@ def Ep():
             stack.append(result)
 
 def Tp():
-    print("Tp")
+    # print("Tp")
     S()
     global counter
     if counter < len(sentence) :
         operator = sentence[counter]
 
-        if operator == '*' or sentence[counter] == '/' or stack.head() == 'x':
+        #print(sentence[counter])
+        if operator == '*' or sentence[counter] == '/' or sentence[counter] == 'x': # 2*x^(23-x)+3  2 x 23 x 3
+            
+            if sentence[counter] != 'x':
+                counter += 1
+            F()
+            Tp()
+
             val2 = stack.pop()
             val1 = stack.pop()
 
             if val2 == 'x':
                 operator = '*'
                 val2 = x
-            else:
-                counter += 1
 
-            F()
-            Tp()
             result = reduction(val1, val2, operator)
             stack.append(result)
 
 def F():
-    print("F")
+    # print("F")
     G()
     Fp()
 
 def Fp():
-    print("Fp")
+    # print("Fp")
     S()
     global counter
     if counter < len(sentence) :
-        val2 = stack.pop()
-        val1 = stack.pop()
-
+        
         operator = sentence[counter]
         if operator == "^":
             counter += 1
             G()
             Fp()
+            val2 = stack.pop()
+            val1 = stack.pop()
+            
             result = reduction(val1, val2, operator)
             stack.append(result)
+    
+    
+def calc(expression):
+    global sentence
+    global x
+    global counter
+    global stack
+    #x  = float(input("Ingresa el valor de X \n"))
+    #sentence = '(1+2)*3+5'
+    ans = []
+    for i in range(-10, 11):
         
+        counter = 0
+        stack = []
+        sentence = expression
+        x = i
+        E()
+        result = stack.pop()
+        ans.append(result)
+        
+        #print("El resultado es: ", result)
 
-while 1:
+    return ans
+
+    toFile = json.dumps(ans)
+    file = open("./jsonDump.json", 'w')
+    file.write(toFile)
+    file.close()
+
+def evaluate(val, expression):
+    global sentence
+    global x
+    global counter
+    global stack
     counter = 0
     stack = []
-    x  = float(input("Ingresa el valor de X \n"))
-    sentence = '(1+2)*3+5'
-    sentence = input("Ingresa la cadena a evaluar\n")
+    x = val
     E()
-    print("El resultado es: ",stack.pop())
+    sentence = expression
+    return stack.pop()
